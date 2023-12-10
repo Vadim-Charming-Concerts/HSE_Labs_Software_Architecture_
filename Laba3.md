@@ -50,4 +50,142 @@ ___Схема базы данных по учёту КТС:___
 
 ![THSB](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/7a5b7dda-60c9-4e14-a6fb-4eb1e285f7b3)
 
+Приступим к реализации серверного и клиентского кода с учётом принципов KISS, YAGNI, DRY и SOLID.
+Для начала необходимо понять, что означает каждый из этих принципов:
+* KISS (Keep It Simple, Stupid / Будь проще) - код должен быть производительным, эффективным и простым;
+* YAGNI (You Aren’t Gonna Need It / Вам это не понадобится) - нужно писать только тот код, который понадобится;
+* DRY (Don’t Repeat Yourself / Не повторяйтесь) - нужно избегать дублирования кода;
+* SOLID (Single-responsibility principle /Принцип единственной ответственности) - Каждый объект, класс и метод должны отвечать только за что-то одно.
+Далее представлены фрагменты кода с использованием вышеперечисленных принципов проектирования и реализации модулей.
 
+KISS (названия переменных интуитивно понятны, код является простым, эффективным и в то же время производительным):
+
+$sql="SELECT * FROM Equip WHERE id=$nst";
+if($result = $conn->query($sql)){
+	$row=$result->fetch_assoc();
+	$NPP=$row["id"]; // $NPP=$nst
+	$NTE=$row["NType"];
+	$Model=$row["Model"];
+	$SN=$row["SN"];
+	$IN=$row["Inv_Num"];
+	$SiNa=$row["SiNa"];
+}
+//***************************************	
+echo '<form  method="post" action="DB_in.php"  target=_parent>';
+
+//	echo '<p>Выбрать тип оборудования:<br>';
+$NaT="Type";$NaP="Type";
+echo '<p>Тип оборудования:<input type="text" name="Type" 
+readonly value="'.seq($NaT,$NTE,$NaP),'">';
+    echo '<p>Модель оборудования:';
+    echo '<input type="text" name="Model" readonly value="'.$Model.'">';
+    echo '<p>Серийный номер:';
+    echo '<input type="text" name="SN" readonly value='.$SN.'>';
+	echo '<p>Инвентарный номер:';
+    echo '<input type="text" name="Inv_Num" readonly value='.$IN.'>';
+	echo '<p>Сетевое имя:';
+    echo '<input type="text" name="SiNa" readonly value='.$SiNa.'>';
+echo '</form>';
+echo '</td>';
+echo '<td valign="top">';
+
+YAGNI (исключаем те методы и функции, которые не пригодятся (закомментируем их) и оставляем только те, которые понадобятся):
+
+<?php
+//echo "UStoExcel.php\n";
+//spl_autoload_unregister('autoload');
+//echo __DIR__;
+require_once __DIR__ .'/PHPExcel/Classes/PHPExcel.php';
+require_once __DIR__ .'/PHPExcel/Classes/PHPExcel/Writer/Excel2007.php';
+//$items=array();
+$xls = new PHPExcel();
+$xls->setActiveSheetIndex(0);
+$sheet = $xls->getActiveSheet();
+// Шапка
+$sheet->getStyle("A1:B1")->getFont()->setBold(true);
+$sheet->setCellValue("A1", 'id');
+$sheet->setCellValue("B1", 'Адрес (город, улица, дом и номер корпуса)');
+// Выборка из БД
+$conn = new mysqli("localhost", "root", "","Eq01");
+if($conn->connect_error){die("Ошибка: " . $conn->connect_error);}
+$sql="SELECT * FROM Address";
+if($result=$conn->query($sql))$rowsCount=$result->num_rows;
+$index = 2;
+while($row=$result->fetch_assoc()){
+$sheet->setCellValue("A" . $index, $row['id']);
+$sheet->setCellValue("B" . $index, $row['AdReg']);
+$index++;
+}
+$conn->close();
+//foreach ($items as $row) {
+// Отдача файла в браузер
+header("Expires: Mon, 1 Apr 1974 05:00:00 GMT");
+header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+header("Cache-Control: no-cache, must-revalidate");
+header("Pragma: no-cache");
+header("Content-type: application/vnd.ms-excel" );
+header("Content-Disposition: attachment; filename=Address.xlsx");
+$objWriter = new PHPExcel_Writer_Excel2007($xls);
+$objWriter->save('php://output'); 
+exit(); 
+?>
+
+DRY (чтобы избежать дублирование кода, было принято решение создать функции):
+
+<?php
+function seq($NaT,$NTE,$NaP)
+{global $conn;
+	//	echo '<p>Выбрать тип оборудования:<br>';
+$sql1 = "SELECT * FROM $NaT WHERE id=$NTE";
+if($res = $conn->query($sql1)){
+    $rowsCount = $res->num_rows; // количество полученных строк
+	$row = $res->fetch_assoc();
+	$TE=$row["$NaP"];
+}
+return $TE;
+}
+function odb($NDB)
+{global $conn;
+	$conn = new mysqli("localhost", "root", "",$NDB);
+if($conn->connect_error){
+    die("Ошибка: " . $conn->connect_error);
+}
+echo "Подключение успешно установлено";
+//return "$conn";
+}
+?>
+
+SOLID (для того, чтобы избежать ситуации, когда какой-либо объект, класс или метод отвечает за разный функционал, было принято решение поделить на классы - каждый класс решает определенную задачу):
+
+![SOLID](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/9a4eebdb-f039-4cf5-be25-3cf0d36b1b6c)
+
+Объекты и методы внутри классов также отвечают только за что-то одно:
+
+<?php
+//require_once 'connect.php';
+$conn = new mysqli("localhost", "root", "","Eq01");
+if($conn->connect_error){
+    die("Ошибка: " . $conn->connect_error);
+}
+//echo "Подключение успешно установлено";
+//phpinfo();
+$ned = (int)$_POST['ed'];
+$sql="SELECT * FROM Offices WHERE id=$ned";
+if($result = $conn->query($sql)){
+	foreach($result as $row){
+	$id=$row["id"];
+	$Office=$row["Office"];
+}}
+echo '<form  method="post" action="OFnew1.php" target="_parent">';
+echo '<p>id:<input type="text" name="id" readonly value='.$id.'></p>';
+echo '<p>Подразделение:<input type="text" name="Office" value='.$Office.'></p>';
+echo '<p><input type="submit" value="Обновить"></p>';
+echo '</form>';
+$conn->close();
+echo '<form  method="post" action="main.php" target="_parent">';
+echo '<p><input type="submit" value="Вернуться обратно"></p>';
+echo '</form>';
+   echo '<script>';
+//echo 'window.location.href ="main.php";';
+echo '</script>'; 
+?>
