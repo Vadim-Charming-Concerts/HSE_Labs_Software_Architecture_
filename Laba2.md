@@ -4,17 +4,19 @@ ___Диаграмма системного контекста:___
 
 ![диаграмма системного контекста](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/56038f32-2a40-4370-a6cc-8ed461f432b5)
 
+Web-приложение состоит из серверной и клиентской частей. Серверная часть взаимодействует с базами данных, производя обмен информацией, а клиентская часть связана с авторизацией в приложении, и в ней происходит ввод логина и пароля. С web-приложением взаимодействуют пользователи: пользователь с ограниченным доступом, с расширенным доступом и администратор.
+
 ___Диаграмма контейнеров:___
 Исходя из построенной диаграммы системного контекста, построим диаграмму контейнеров:
 
-![Диаграмма контейнеров](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/5cffa2cd-a2f7-416f-abdb-63863a7209d6)
+![диаграмма контейнеров](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/e67fefa5-4745-44e6-81e8-646d56d2355f)
 
 ___Диаграмма компонентов:___
 
-![Диаграмма компонентов (серверная часть)](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/4681cd07-8412-43fa-bd29-1bd80be4eff0)
-
-Диаграмма компонентов (серверная часть)
-
-![Диаграмма компонентов (клиентская часть)](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/0951790c-f170-4312-9935-69e46168d7f6)
+![диаграмма компонентов - клиентская часть](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/4d2af51a-9132-47e7-8729-28bfb252bb52)
 
 Диаграмма компонентов (клиентская часть)
+
+![диаграмма компонентов - серверная часть](https://github.com/Vadim-Charming-Concerts/HSE_Labs_Software_Architecture_/assets/100124384/e465ab28-7667-4856-866b-195806fcd902)
+
+Диаграмма компонентов (серверная часть)
