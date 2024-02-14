@@ -1,0 +1,27 @@
+version: '3.7'
+
+networks:
+    some-network:
+
+services:
+  user-service:
+    container_name: user-service
+    image: user-service
+    build: ./user-service
+    ports:
+      - "5001:5001"
+    environment:
+      - USER_DETAILS_CONNECTION_URL=http://user-details-service:5002
+    networks:
+      - some-network
+    depends_on:
+      - user-details-service
+
+  user-details-service:
+    container_name: user-details-service
+    image: user-details-service
+    build: ./user-details-service
+    ports:
+      - "5002:5002"
+    networks:
+      - some-network
