@@ -1,0 +1,3 @@
+rootProject.name = "user-integration-api"
+include 'user-details-service'
+include 'user-service'
