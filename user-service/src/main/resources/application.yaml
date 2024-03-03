@@ -1,0 +1,9 @@
+spring:
+    application:
+        name: user-service
+server:
+    port: 5001
+
+user-details-service-url: http://localhost:5002/user-details-service
+#user-details-service-url: http://user-details-service:5002/user-details-service
+details-by-name: ${user-details-service-url}/get-user-details-by-name
